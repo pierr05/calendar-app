@@ -3,94 +3,79 @@ var saveBtn = $('.saveBtn');
 var hour9 = $('#hour-9');
 var hour10 = $('#hour-10');
 var hour11 = $('#hour-11');
-var hourText = $('.hour');
-var currentHour = dayjs().format('hA').toString();
+var hour12 = $('#hour-12');
+var hour13 = $('#hour-13');
+var hour14 = $('#hour-14');
+var hour15 = $('#hour-15');
+var textarea = $('.description');
+var currentHour = dayjs().format('HHA')
 
 $(function () {
 
   saveBtn.on('click', function(event) {
     event.preventDefault();
     // save users input to local storage
-    var userInput = $('.description').val();
     var message = $('#message');
-    localStorage.setItem('Appointment', userInput);
+    var userInput = $('.description').val();
 
     if (userInput === " ") {
       message.text("Please add an appointment.");
 
     } else{
+      window.onbeforeunload = function(){
+        localStorage.setItem('Appointment', userInput);
+      }
+
       message.text("Appointment added✅ to local storage.");
 
+      window.onload = function() {
+        let savedData = localStorage.getItem('Appointment');
+
+        if (savedData !== null) {
+          $('.description').val(savedData)
+        }
+      }
     }
+
   }); 
-
-    // TODO: Add code to apply the past, present, or future class to each time
-    // block by comparing the id to the current hour. HINTS: How can the id
-    // attribute of each time-block be used to conditionally add or remove the
-    // past, present, and future classes? How can Day.js be used to get the
-    // current hour in 24-hour time?
-    //
-
-    const hour9Color = () => {
-
-     if (currentHour === hour9.text()) {
-        // add present class 
-         hour9.addClass('present');
-
-    } else if (currentHour < hour9.text()) {
-        // add future class
-        hour9.addClass('future');
-
-      } else {
-        // add past class 
-        hour9.addClass('past');
-
-      }
-    }; 
-
-     let hour10Color = () => {
-      if (currentHour === hour10.text()) {
-        // add present class
-        hour10.addClass('present');
-
-      } else if (currentHour > hour10.text()) {
-        // add future class
-        hour10.addClass('future');
-
-      } else {
-        // add past class 
-        hour10.addClass('past');
-      }
-     };
-
-     let hour11Color = () => {
-      if (currentHour === hour10.text()) {
-        // add present class
-        hour11.addClass('present');
-
-      } else if (currentHour > hour10.text()) {
-        // add future class
-        hour11.addClass('future');
-
-      } else {
-        // add past class 
-        hour11.addClass('past');
-      }
-     }
-
     // TODO: Add code to get any user input that was saved in localStorage and set
     // the values of the corresponding textarea elements. HINT: How can the id
     // attribute of each time-block be used to do this?
-    //
+    // 
 
-    // TODO: Add code to display the current date in the header of the page.
+    const changeColor = () => {
+     
+      var newCurrentHour = parseInt(currentHour.split("").slice(0, 2).join(""));
+      
+      $('.time-block').each(function(){
+        var getHours = parseInt($(this).attr('id').split("-")[1]);
+        
+        if (newCurrentHour === getHours) {
+          
+          $(this).addClass('present');
+  
+      } else if (newCurrentHour < getHours) {
+          
+          $(this).removeClass('present');
+          $(this).addClass('future');
+  
+        } else {
+          
+          $(this).removeClass('present');
+          $(this).removeClass('future');
+          $(this).addClass('past');
+  
+        }
+      })
+    }; 
+
+    // display the current date in the header of the page.
     const displayTime = () => {
       let currentTime = dayjs().format('dddd, MMMM DD[th] YYYY'); 
       currentDay.text(currentTime); 
     }
 
     displayTime();
-    hour9Color();
-    hour10Color();
-    hour11Color();
+    changeColor();
+    getSavedData();
   });
